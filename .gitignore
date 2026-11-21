@@ -1,0 +1,55 @@
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Python Virtual Environments & Caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Frontend Dependencies & Build Outputs
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+
+# Local Runtime SQLite Databases, Journals & User Data
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+backend/database/vibeshift.db
+
+# Restricted / Non-Redistributable Model Checkpoints & Large Datasets
+# See docs/MODEL_SETUP.md and docs/THIRD_PARTY_LICENSES.md for details.
+backend/ai/models/clean_btn_vit_phase12.pt
+*.pt
+*.pth
+*.pth.tar
+*.ckpt
+*.safetensors
+*.npz
+*.npy
+
+# Logs, Temporary Files & OS/Editor Metadata
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo

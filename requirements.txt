@@ -1,0 +1,21 @@
+# VibeShift Backend Runtime Dependencies (Python 3.10 - 3.12)
+# Only packages directly required by the final CleanBTNVit + YuNet + FastAPI application.
+#
+# GPU Acceleration (Recommended — NVIDIA CUDA 12.6):
+#   pip install torch==2.10.0+cu126 --index-url https://download.pytorch.org/whl/cu126
+#   pip install -r requirements.txt
+#
+# CPU-Only Fallback:
+#   pip install -r requirements.txt
+#   (CPU inference is supported automatically when CUDA is unavailable; real-time
+#    frame rates have only been benchmarked on an NVIDIA RTX 3050 Laptop GPU.)
+
+fastapi>=0.115.0,<1.0.0
+uvicorn[standard]>=0.32.0,<1.0.0
+pydantic>=2.9.0,<3.0.0
+python-multipart>=0.0.12
+python-dotenv>=1.0.1
+numpy>=2.0.0,<3.0.0
+pandas>=2.2.0,<4.0.0
+opencv-python-headless>=4.10.0,<5.0.0
+torch>=2.5.0
