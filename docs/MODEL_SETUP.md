@@ -59,31 +59,31 @@ Before sharing the checkpoint directly with classmates or academic teammates:
 git clone https://github.com/Siddharth1968/vibe-shift.git
 cd vibe-shift
 
-# Point setup.bat to your privately transferred checkpoint file (optional CUDA GPU: set VIBESHIFT_INSTALL_CUDA=1)
+# Point setup.bat to your privately transferred checkpoint file (auto-detects NVIDIA GPU or CPU fallback)
 $env:VIBESHIFT_MODEL_PATH = "D:\shared\clean_btn_vit_phase12.pt"
 .\setup.bat
 ```
 
-**Option B — Install Checkpoint After Running `setup.bat`:**
+**Option B — Install Checkpoint After Running `setup.bat` (with live PyTorch load check):**
 ```powershell
-.\.venv\Scripts\python.exe scripts\install_model.py --from-file "C:\path\to\clean_btn_vit_phase12.pt"
+.\.venv\Scripts\python.exe scripts\install_model.py --from-file "C:\path\to\clean_btn_vit_phase12.pt" --check-load
 ```
 
 **Option C — Install from a Private Authorized Collaborator URL:**
 ```powershell
-.\.venv\Scripts\python.exe scripts\install_model.py --url "<YOUR_PRIVATE_AUTHORIZED_DOWNLOAD_URL>"
+.\.venv\Scripts\python.exe scripts\install_model.py --url "<YOUR_PRIVATE_AUTHORIZED_DOWNLOAD_URL>" --check-load
 ```
 
 **Option D — Manual Placement & Verification:**
 1. Copy the file to `backend/ai/models/clean_btn_vit_phase12.pt`.
 2. Run verification:
    ```powershell
-   .\.venv\Scripts\python.exe scripts\install_model.py --verify-only
+   .\.venv\Scripts\python.exe scripts\install_model.py --verify-only --check-load
    ```
    Expected SHA-256: `0316ea2a96e671f562a770ace64b8665e8bc1996be0046cbe94c4674bb0c5d58`.
 
 ### Step 3 — Launch VibeShift
-Run `run_backend.bat` and `run_frontend.bat` and open `http://localhost:5173`. Confirm `GET http://127.0.0.1:8000/api/health` reports `"model_loaded": true`.
+Double-click **`start_vibeshift.bat`** (or run `run_backend.bat` and `run_frontend.bat`) and open `http://localhost:5173`. Confirm `GET http://127.0.0.1:8000/api/health` reports `"model_loaded": true` and `"detector_loaded": true`.
 
 ---
 

@@ -307,5 +307,21 @@ def test_model_installer_rejects_bad_checksum_and_verifies_valid_weights():
         assert mod.install_from_file(bad_file) == 1
 
     if WEIGHTS_PRESENT:
-        assert mod.main(["--verify-only"]) == 0
+        assert mod.main(["--verify-only", "--check-load"]) == 0
+
+
+def test_verify_install_helper_cli_modes():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "vibeshift_verify_install", REPO_ROOT / "scripts" / "verify_install.py"
+    )
+    vmod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(vmod)
+
+    assert vmod.main(["--check-python"]) == 0
+    assert vmod.main(["--check-cuda"]) == 0
+    assert vmod.main(["--port-state", "8000"]) == 0
+    assert vmod.main(["--port-state", "5173"]) == 0
+
 

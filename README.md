@@ -95,7 +95,7 @@ VibeShift uses OpenCV's neural **YuNet** ONNX detector (`backend/ai/models/yunet
 | **Single-View (Default)** | **74.10%** (`2,975 / 4,015`) | 72.37% | 0.7467 | 0.0390 | **22.53 ms** median (`44.38 FPS`) | **45.61 ms** median |
 | **Horizontal-Flip (Accuracy Mode)** | **74.37%** (`2,986 / 4,015`) | 72.78% | 0.7338 | 0.0314 | **42.63 ms** median (`23.46 FPS`) | **69.25 ms** median |
 
-*CPU-only fallback is supported automatically when CUDA is unavailable; real-time throughput has only been benchmarked on an NVIDIA RTX 3050 Laptop GPU.*
+*Measured CPU fallback (6 CPU threads, FP32 via `VIBESHIFT_DEVICE=cpu`): **180.3 ms** single-view / **360.1 ms** horizontal-flip model-only, **226.9 ms** full 640×480 YuNet+CleanBTNVit pipeline (~4.4 FPS), **1.43 s** model load, and **~1.0 GiB** backend process RAM (`1,023.8 MiB` peak RSS). Usable for snapshots and low-FPS polling; real-time high-FPS scanning requires an NVIDIA CUDA GPU.*
 
 ---
 
@@ -117,7 +117,7 @@ Weighted additive scoring (`backend/services/recommendation.py`):
 ## 11. Project Structure
 
 ```text
-VibeShift-Final/
+VibeShift/
 ├── backend/
 │   ├── ai/
 │   │   ├── btn_runtime/          # Self-contained MIT-licensed CleanBTNVit architecture
@@ -140,19 +140,22 @@ VibeShift-Final/
 │   ├── package-lock.json
 │   └── vite.config.js
 ├── scripts/
-│   └── install_model.py          # Verified SHA-256 installer for authorized local/private checkpoint
+│   ├── install_model.py          # Verified SHA-256 installer for authorized local/private checkpoint
+│   └── verify_install.py         # Post-setup DB, YuNet, CleanBTNVit, and FastAPI /api/health verifier
 ├── tests/                        # Self-contained backend & AI integration tests
 ├── docs/
 │   ├── API_CONTRACT.md
 │   ├── ARCHITECTURE_AND_EVALUATION.md
 │   ├── MODEL_SETUP.md
 │   └── THIRD_PARTY_LICENSES.md
+├── FRIEND_INSTALLATION_GUIDE.md  # Step-by-step Windows setup guide for teammates (ZIP & GitHub)
 ├── requirements.txt
 ├── requirements-dev.txt
 ├── .env.example
 ├── .gitignore
 ├── .gitattributes
 ├── setup.bat
+├── start_vibeshift.bat
 ├── run_backend.bat
 └── run_frontend.bat
 ```
@@ -168,15 +171,22 @@ VibeShift-Final/
 
 ## 13. Installation Instructions
 
-### Windows One-Click Setup
+> **New to installing Python/Node projects?** Follow the beginner-friendly step-by-step guide in [FRIEND_INSTALLATION_GUIDE.md](FRIEND_INSTALLATION_GUIDE.md) (covers both Portable ZIP extraction and Fresh GitHub Clone).
+
+### Windows One-Click Setup (Auto GPU / CPU Detection)
 ```cmd
-:: Standard install (CPU PyTorch by default):
+:: Automatically detects Python 3.10-3.12, Node 18+, and NVIDIA CUDA GPU (falls back to CPU PyTorch):
 setup.bat
 
-:: Optional NVIDIA CUDA 12.6 GPU install:
-set VIBESHIFT_INSTALL_CUDA=1
+:: Optional — force CPU-only PyTorch install (smaller ~1.5 GB disk footprint):
+set VIBESHIFT_FORCE_CPU=1
+setup.bat
+
+:: Optional — install authorized local checkpoint automatically in one step:
+set VIBESHIFT_MODEL_PATH=D:\shared\clean_btn_vit_phase12.pt
 setup.bat
 ```
+`setup.bat` validates SQLite (137 songs), YuNet SHA-256 & loading, CleanBTNVit SHA-256 & live PyTorch forward pass (when installed), and FastAPI `/api/health`. If the checkpoint is not yet installed, `setup.bat` reports **`PARTIAL SETUP: Core App Ready - AI MODEL NOT INSTALLED`** honestly instead of claiming full AI readiness.
 
 ### Manual Portable Setup (PowerShell)
 ```powershell
@@ -213,7 +223,10 @@ npm ci
 
 ## 15. Launching Frontend and Backend
 
-**Windows Batch Launchers:**
+**One-Click Windows Launcher (Recommended):**
+- Double-click **`start_vibeshift.bat`** — verifies `.venv`, `node_modules`, YuNet, and CleanBTNVit SHA-256, checks ports `8000`/`5173`, launches both servers with visible logs, waits for `/api/health` (`model_loaded: true`, `detector_loaded: true`), and opens `http://localhost:5173`.
+
+**Individual Server Scripts:**
 1. Run `run_backend.bat` → FastAPI starts on `http://127.0.0.1:8000` (initializes a fresh SQLite DB and loads YuNet + CleanBTNVit once at startup).
 2. Run `run_frontend.bat` → Vite dev server starts on `http://localhost:5173`.
 
