@@ -51,6 +51,11 @@ def check_python_version() -> int:
     return 1
 
 
+def _parse_cuda_driver_ok(nvidia_smi_output: str) -> bool:
+    m = re.search(r"CUDA(?:\s+\w+)*\s+Version:\s*(\d+)\.(\d+)", nvidia_smi_output)
+    return bool(m and (int(m.group(1)), int(m.group(2))) >= (12, 1))
+
+
 def check_cuda_driver() -> int:
     try:
         out = subprocess.check_output(
@@ -59,8 +64,7 @@ def check_cuda_driver() -> int:
             stderr=subprocess.STDOUT,
             timeout=10,
         )
-        m = re.search(r"CUDA Version:\s*(\d+)\.(\d+)", out)
-        if m and (int(m.group(1)), int(m.group(2))) >= (12, 1):
+        if _parse_cuda_driver_ok(out):
             print("CUDA_OK")
             return 0
     except Exception:

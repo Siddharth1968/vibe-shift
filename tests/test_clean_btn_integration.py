@@ -321,6 +321,9 @@ def test_verify_install_helper_cli_modes():
 
     assert vmod.main(["--check-python"]) == 0
     assert vmod.main(["--check-cuda"]) == 0
+    assert vmod._parse_cuda_driver_ok("| NVIDIA-SMI 560.94  Driver Version: 560.94  CUDA Version: 12.6 |") is True
+    assert vmod._parse_cuda_driver_ok("| NVIDIA-SMI 610.91  KMD Version: 610.91  CUDA UMD Version: 13.3 |") is True
+    assert vmod._parse_cuda_driver_ok("| NVIDIA-SMI 525.00  CUDA Version: 11.8 |") is False
     assert vmod.main(["--port-state", "8000"]) == 0
     assert vmod.main(["--port-state", "5173"]) == 0
 
