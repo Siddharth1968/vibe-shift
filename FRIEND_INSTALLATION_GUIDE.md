@@ -13,7 +13,7 @@ Welcome! This guide walks you step-by-step through installing and running the co
 | **Node.js & npm** | Node.js 18+ LTS | Node.js 20 or 22 LTS | Download: https://nodejs.org/ (includes `npm`). |
 | **Git** | Not needed for Method A (ZIP) | Git for Windows | Needed **only** for Method B (GitHub clone): https://git-scm.com/ |
 | **RAM** | **8 GB system RAM** | **16 GB system RAM** | **Measured** CPU backend process RAM is **~1.0 GiB** (`1,023.8 MiB` peak working set) when running CleanBTNVit; Chrome/Edge + Vite + OS require additional RAM. |
-| **Free Disk Space** | **~1.5 GB** (CPU-only install) | **~5.0 GB** (NVIDIA CUDA GPU install) | PyTorch CUDA 12.6 wheel is `2.59 GB` (`.venv` ~4.4 GB total on GPU, ~1.0 GB on CPU) + `frontend/node_modules` (~220 MB) + checkpoint (`245.3 MiB`). |
+| **Free Disk Space** | **~1.5 GB** (CPU-only install) | **~5.0 GB** (NVIDIA CUDA GPU install) | PyTorch CUDA 12.6 wheel is `2.59 GB` (`.venv` ~4.4 GB on GPU; **measured CPU `.venv` is `881.1 MB`** with `torch-2.15.0` 126.7 MB wheel) + `frontend/node_modules` (~220 MB) + checkpoint (`245.3 MiB`). |
 | **Internet Connection** | Required for initial setup & Spotify playback | Broadband | Needed during `setup.bat` to download Python + npm packages and at runtime for Spotify Embeds. |
 | **Webcam** | Built-in or USB camera | 720p+ webcam | Optional — you can also upload photos or use Manual Mood Mode without a webcam. |
 
@@ -168,4 +168,5 @@ VibeShift uses **exactly one facial-expression recognition model**: **CleanBTNVi
 | **Webcam shows black video or permission denied** | Allow camera permission for `http://localhost:5173` in Chrome/Edge, check Windows **Settings → Privacy & security → Camera → Let desktop apps access your camera**, and close Teams/Zoom/Camera app. |
 | **Slow webcam updates on CPU-only laptop** | Expected on CPU (`~227 ms` per 640×480 frame in single-view mode). Keep **Accuracy Mode (Horizontal Flip)** OFF (default single-view) or use **Upload Photo** for instant single-frame checks. |
 | **Spotify only plays 30-second previews** | Expected behavior of Spotify Embeds when you are not signed into Spotify in the same browser. Log into `open.spotify.com` in your browser or click **Open in Spotify** on any track card. |
+| **`Git LFS pointer file` error during setup** | If you cloned from GitHub without Git LFS installed, install Git LFS (https://git-lfs.com/) and run `git lfs install && git lfs pull`, OR install a locally shared authorized checkpoint via `.venv\Scripts\python.exe scripts\install_model.py --from-file "PATH\TO\clean_btn_vit_phase12.pt"`. |
 | **Windows Defender / SmartScreen warns about `.bat` file** | Click **More info → Run anyway** (standard Windows warning for downloaded batch scripts from ZIP archives). |

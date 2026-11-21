@@ -206,6 +206,13 @@ def run_full_verification() -> int:
     ckpt_path = REPO_ROOT / "backend" / "ai" / "models" / "clean_btn_vit_phase12.pt"
     weights_present = ckpt_path.is_file()
     if weights_present:
+        if ckpt_path.stat().st_size <= 1024 and ckpt_path.read_bytes()[:64].startswith(
+            b"version https://git-lfs.github.com/spec/v1"
+        ):
+            print("[ERROR] backend/ai/models/clean_btn_vit_phase12.pt is a Git LFS pointer, not the 245.3 MiB weights.")
+            print("        Run 'git lfs install && git lfs pull' or install the authorized local checkpoint with:")
+            print('          .venv\\Scripts\\python.exe scripts\\install_model.py --from-file "PATH\\TO\\clean_btn_vit_phase12.pt"')
+            return 1
         ckpt_sha = _sha256(ckpt_path)
         if ckpt_sha != CLEAN_BTN_EXPECTED_SHA256:
             print("[ERROR] CleanBTNVit checkpoint SHA-256 mismatch!")

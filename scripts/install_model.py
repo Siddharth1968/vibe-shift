@@ -35,9 +35,26 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+def is_git_lfs_pointer(path: Path) -> bool:
+    try:
+        if path.stat().st_size > 1024:
+            return False
+        head = path.read_bytes()[:64]
+        return head.startswith(b"version https://git-lfs.github.com/spec/v1")
+    except OSError:
+        return False
+
+
 def verify_target(path: Path = TARGET_PATH, check_load: bool = False) -> bool:
     if not path.is_file():
         print(f"[MISSING] CleanBTNVit checkpoint not found at: {path}")
+        return False
+    if is_git_lfs_pointer(path):
+        print(f"[ERROR] {path} is a Git LFS pointer file (not the 245.3 MiB model weights).")
+        print("        Install Git LFS (https://git-lfs.com/) and run:")
+        print("          git lfs install && git lfs pull")
+        print("        OR install from a local authorized copy:")
+        print('          .venv\\Scripts\\python.exe scripts\\install_model.py --from-file "PATH\\TO\\clean_btn_vit_phase12.pt"')
         return False
     actual = sha256_file(path)
     if actual.lower() != EXPECTED_SHA256.lower():
