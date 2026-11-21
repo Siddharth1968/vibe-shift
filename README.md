@@ -139,6 +139,8 @@ VibeShift-Final/
 │   ├── package.json
 │   ├── package-lock.json
 │   └── vite.config.js
+├── scripts/
+│   └── install_model.py          # Verified SHA-256 installer for authorized local/private checkpoint
 ├── tests/                        # Self-contained backend & AI integration tests
 ├── docs/
 │   ├── API_CONTRACT.md
@@ -196,9 +198,18 @@ npm ci
 ## 14. Model Asset Setup and Licensing
 
 - `backend/ai/models/yunet-2023mar.onnx` (**MIT License**) is included in this repository.
-- **`backend/ai/models/clean_btn_vit_phase12.pt` (257 MB, SHA-256 `0316ea2a96e671f562a770ace64b8665e8bc1996be0046cbe94c4674bb0c5d58`) is NOT included in this public GitHub repository** because its upstream training/distillation sources (**AffectNet**, **ExpW**, **RAF-DB**, **MS-Celeb-1M**) carry academic/non-commercial restrictions without established public redistribution rights.
-- A fresh clone requires separately obtained/locally trained authorized weights placed at `backend/ai/models/clean_btn_vit_phase12.pt` to enable camera emotion classification. Without the weights file, VibeShift still launches cleanly and supports full manual mood selection, recommendations, Spotify embeds, feedback, and Mood Journey.
-- Full instructions and checksum verification steps are documented in [docs/MODEL_SETUP.md](docs/MODEL_SETUP.md).
+- **`backend/ai/models/clean_btn_vit_phase12.pt` (~245.3 MiB, SHA-256 `0316ea2a96e671f562a770ace64b8665e8bc1996be0046cbe94c4674bb0c5d58`) is NOT hosted publicly in this repository** because public redistribution rights remain unestablished across its upstream academic dataset/checkpoint lineage (**AffectNet** non-commercial academic EULA, **ExpW** academic/non-commercial research terms, **RAF-DB** derived-data non-commercial restriction, and **MS-Celeb-1M** retracted backbone).
+- **For authorized academic collaborators:** obtain `clean_btn_vit_phase12.pt` via your private team transfer (USB or restricted university cloud share) and install + SHA-256 verify it in one command:
+  ```powershell
+  # Either during setup:
+  $env:VIBESHIFT_MODEL_PATH = "C:\path\to\clean_btn_vit_phase12.pt"
+  .\setup.bat
+
+  # Or anytime after setup:
+  .\.venv\Scripts\python.exe scripts\install_model.py --from-file "C:\path\to\clean_btn_vit_phase12.pt"
+  ```
+- Without the weights file, VibeShift still launches cleanly in Manual Mood Mode (full manual mood selection, recommendations, Spotify embeds, feedback, and Mood Journey).
+- Full legal breakdown, collaborator transfer guidance, and checksum verification steps are documented in [docs/MODEL_SETUP.md](docs/MODEL_SETUP.md).
 
 ## 15. Launching Frontend and Backend
 

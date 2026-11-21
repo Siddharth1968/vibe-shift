@@ -290,3 +290,22 @@ def test_all_spotify_track_urls_valid_in_songs_csv():
     assert len(rows) == 137
     bad_csv = [r["title"] for r in rows if not SPOTIFY_TRACK_RE.match((r.get("audio_url") or "").strip())]
     assert bad_csv == [], f"Invalid Spotify URLs in songs.csv: {bad_csv}"
+
+
+def test_model_installer_rejects_bad_checksum_and_verifies_valid_weights():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "vibeshift_install_model", REPO_ROOT / "scripts" / "install_model.py"
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        bad_file = Path(tmpdir) / "wrong.pt"
+        bad_file.write_bytes(b"corrupted-weights-bytes")
+        assert mod.install_from_file(bad_file) == 1
+
+    if WEIGHTS_PRESENT:
+        assert mod.main(["--verify-only"]) == 0
+

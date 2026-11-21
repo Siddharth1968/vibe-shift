@@ -81,13 +81,36 @@ if not exist "backend\ai\models\yunet-2023mar.onnx" (
 )
 
 if not exist "backend\ai\models\clean_btn_vit_phase12.pt" (
-    echo [NOTICE] Optional camera AI checkpoint not found at:
-    echo          backend\ai\models\clean_btn_vit_phase12.pt
-    echo          The app will still run cleanly in Manual Mood Mode.
-    echo          See docs\MODEL_SETUP.md for authorized checkpoint placement and SHA-256 verification.
+    if defined VIBESHIFT_MODEL_PATH (
+        echo [INFO] Installing CleanBTNVit checkpoint from VIBESHIFT_MODEL_PATH...
+        ".venv\Scripts\python.exe" scripts\install_model.py --from-file "%VIBESHIFT_MODEL_PATH%"
+        if errorlevel 1 (
+            echo [ERROR] Model installation from VIBESHIFT_MODEL_PATH failed.
+            exit /b 1
+        )
+    ) else if defined VIBESHIFT_MODEL_URL (
+        echo [INFO] Downloading CleanBTNVit checkpoint from VIBESHIFT_MODEL_URL...
+        ".venv\Scripts\python.exe" scripts\install_model.py --url "%VIBESHIFT_MODEL_URL%"
+        if errorlevel 1 (
+            echo [ERROR] Model download from VIBESHIFT_MODEL_URL failed.
+            exit /b 1
+        )
+    ) else (
+        echo [NOTICE] CleanBTNVit AI checkpoint not found at:
+        echo          backend\ai\models\clean_btn_vit_phase12.pt
+        echo          For full facial-expression recognition, obtain the authorized checkpoint
+        echo          from your academic project team and run:
+        echo            .venv\Scripts\python.exe scripts\install_model.py --from-file "PATH\TO\clean_btn_vit_phase12.pt"
+        echo          Until installed, the app still runs cleanly in Manual Mood Mode.
+        echo          See docs\MODEL_SETUP.md for licensing details and verification steps.
+    )
 ) else (
     echo [OK] CleanBTNVit checkpoint found. Verifying SHA-256...
-    ".venv\Scripts\python.exe" -c "import hashlib, pathlib; p=pathlib.Path('backend/ai/models/clean_btn_vit_phase12.pt'); got=hashlib.sha256(p.read_bytes()).hexdigest(); exp='0316ea2a96e671f562a770ace64b8665e8bc1996be0046cbe94c4674bb0c5d58'; print('[OK] Verified SHA-256:', got) if got==exp else print('[WARNING] SHA-256 mismatch:', got)"
+    ".venv\Scripts\python.exe" scripts\install_model.py --verify-only
+    if errorlevel 1 (
+        echo [ERROR] Existing checkpoint failed SHA-256 verification.
+        exit /b 1
+    )
 )
 
 echo ========================================================
