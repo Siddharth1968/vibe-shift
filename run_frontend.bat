@@ -5,7 +5,7 @@ cd /d "%~dp0frontend"
 
 if not exist "node_modules" (
     echo [ERROR] Frontend node_modules not found.
-    echo         Please run setup.bat (or npm ci inside frontend\) first.
+    echo         Please run setup.bat - or npm ci inside frontend\ - first.
     pause
     exit /b 1
 )

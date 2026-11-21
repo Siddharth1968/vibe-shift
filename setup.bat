@@ -38,17 +38,17 @@ if not defined PYTHON_CMD (
     )
 )
 if not defined PYTHON_CMD (
-    echo [ERROR] Python 3.10, 3.11, or 3.12 (64-bit) is required.
-    echo         (PyTorch CUDA/CPU wheels do not support Python 3.13/3.14 yet.)
+    echo [ERROR] Python 3.10, 3.11, or 3.12 64-bit is required.
+    echo         PyTorch CUDA/CPU wheels do not support Python 3.13/3.14 yet.
     echo         Download Python 3.12 from:
     echo           https://www.python.org/downloads/release/python-31210/
     echo         Make sure to check "Add python.exe to PATH" during installation.
     exit /b 1
 )
 for /f "usebackq delims=" %%V in (`%PYTHON_CMD% scripts\verify_install.py --check-python`) do set "PY_VER=%%V"
-echo [OK] Using Python %PY_VER% (%PYTHON_CMD%).
+echo [OK] Using Python %PY_VER% [%PYTHON_CMD%].
 
-:: 3. Detect Node.js (>= 18) and npm
+:: 3. Detect Node.js >= 18 and npm
 where node >nul 2>nul
 if errorlevel 1 (
     echo [ERROR] Node.js 18+ was not found on PATH.
@@ -69,17 +69,17 @@ if errorlevel 1 (
 )
 echo [OK] Using Node.js %NODE_VER%.
 
-:: 4. Note Git status (only needed for GitHub clone workflows; not required for ZIP extraction)
+:: 4. Note Git status - only needed for GitHub clone workflows; not required for ZIP extraction
 where git >nul 2>nul
 if errorlevel 1 (
-    echo [INFO] Git not detected (not required for ZIP installation; install from https://git-scm.com/ only for Git clone workflows).
+    echo [INFO] Git not detected - not required for ZIP installation; install from https://git-scm.com/ only for Git clone workflows.
 ) else (
     echo [OK] Git detected.
 )
 
 :: 5. Create fresh local Python virtual environment
 echo.
-echo [1/6] Setting up isolated Python virtual environment (.venv)...
+echo [1/6] Setting up isolated Python virtual environment [.venv]...
 if not exist ".venv\Scripts\python.exe" (
     %PYTHON_CMD% -m venv .venv
     if errorlevel 1 (
@@ -89,7 +89,7 @@ if not exist ".venv\Scripts\python.exe" (
 )
 ".venv\Scripts\python.exe" -m pip install --upgrade pip >nul 2>nul
 
-:: 6. Detect NVIDIA GPU & compatible CUDA driver (12.1+), else install CPU PyTorch fallback
+:: 6. Detect NVIDIA GPU & compatible CUDA driver 12.1+, else install CPU PyTorch fallback
 echo [2/6] Detecting GPU/CUDA support and installing PyTorch...
 set "USE_CUDA=0"
 if /I "%VIBESHIFT_FORCE_CPU%"=="1" (
@@ -103,7 +103,7 @@ if /I "%VIBESHIFT_FORCE_CPU%"=="1" (
 ".venv\Scripts\python.exe" -c "import torch" >nul 2>nul
 if errorlevel 1 (
     if "%USE_CUDA%"=="1" (
-        echo [INFO] Compatible NVIDIA GPU + CUDA driver detected. Installing PyTorch CUDA 12.6 (~2.6 GB download)...
+        echo [INFO] Compatible NVIDIA GPU + CUDA driver detected. Installing PyTorch CUDA 12.6 [~2.6 GB download]...
         ".venv\Scripts\python.exe" -m pip install torch==2.10.0+cu126 --index-url https://download.pytorch.org/whl/cu126
         if errorlevel 1 (
             echo [WARNING] CUDA PyTorch installation failed; falling back to CPU PyTorch build...
@@ -115,7 +115,7 @@ if errorlevel 1 (
         )
     ) else (
         echo [INFO] No compatible NVIDIA CUDA GPU detected. Installing CPU PyTorch build...
-        echo        (CPU fallback is fully supported; note inference is slower than GPU.)
+        echo        CPU fallback is fully supported; note inference is slower than GPU.
         ".venv\Scripts\python.exe" -m pip install "torch>=2.5.0"
         if errorlevel 1 (
             echo [ERROR] PyTorch CPU installation failed. Check internet connection and retry.
@@ -127,7 +127,7 @@ if errorlevel 1 (
 )
 
 :: 7. Install required backend packages
-echo [3/6] Installing backend dependencies (requirements.txt)...
+echo [3/6] Installing backend dependencies [requirements.txt]...
 ".venv\Scripts\python.exe" -m pip install -r requirements.txt
 if errorlevel 1 (
     echo [ERROR] Failed to install backend requirements. Check internet connection and retry.
@@ -135,7 +135,7 @@ if errorlevel 1 (
 )
 
 :: 8. Install frontend dependencies via npm ci
-echo [4/6] Installing frontend dependencies (npm ci)...
+echo [4/6] Installing frontend dependencies [npm ci]...
 pushd frontend
 call npm ci
 if errorlevel 1 (
@@ -174,7 +174,7 @@ if exist "backend\ai\models\clean_btn_vit_phase12.pt" (
     )
 )
 
-:: 10. Full runtime verification (DB + 137 songs + YuNet + CleanBTNVit load + FastAPI startup)
+:: 10. Full runtime verification: DB + 137 songs + YuNet + CleanBTNVit load + FastAPI startup
 echo.
 echo [6/6] Running end-to-end installation verification...
 ".venv\Scripts\python.exe" scripts\verify_install.py
@@ -185,7 +185,7 @@ if "%VERIFY_RC%"=="0" (
     echo ========================================================
     echo  SUCCESS: Full VibeShift AI installation verified!
     echo  - YuNet face detector:     READY
-    echo  - CleanBTNVit Phase 12 AI: READY (SHA-256 verified)
+    echo  - CleanBTNVit Phase 12 AI: READY [SHA-256 verified]
     echo  - FastAPI + SQLite + UI:   READY
     echo.
     echo  Launch VibeShift anytime by double-clicking:
@@ -198,7 +198,7 @@ if "%VERIFY_RC%"=="2" (
     echo ========================================================
     echo  PARTIAL SETUP: Core App Ready - AI MODEL NOT INSTALLED
     echo ========================================================
-    echo  - FastAPI + SQLite (137 songs) + React UI: READY
+    echo  - FastAPI + SQLite [137 songs] + React UI: READY
     echo  - YuNet face detector:                     READY
     echo  - CleanBTNVit Phase 12 AI checkpoint:      MISSING
     echo.
@@ -215,7 +215,7 @@ if "%VERIFY_RC%"=="2" (
 )
 
 echo ========================================================
-echo  SETUP FAILED (error code %VERIFY_RC%). Review messages above.
+echo  SETUP FAILED [error code %VERIFY_RC%]. Review messages above.
 echo ========================================================
 exit /b %VERIFY_RC%
 endlocal
